@@ -15,6 +15,8 @@ interface PreferencesState extends UserPreferences {
   removeFavorite: (id: string) => void;
   renameFavorite: (id: string, newLabel: string) => void;
   addRecentLocation: (path: string) => void;
+  removeRecentLocation: (path: string) => void;
+  clearRecentLocations: () => void;
   setLastScanPath: (path: string | null) => void;
   loadPreferences: (prefs: Partial<UserPreferences>) => void;
 }
@@ -159,6 +161,25 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => ({
       const nextRecent = [path, ...filtered].slice(0, 5);
       return { recentLocations: nextRecent, lastScanPath: path };
     });
+    syncPreferences(get());
+  },
+
+  removeRecentLocation: (path: string) => {
+    set((state) => {
+      const nextRecent = state.recentLocations.filter(
+        (p) => p.toLowerCase() !== path.toLowerCase()
+      );
+      const nextLastScan =
+        state.lastScanPath?.toLowerCase() === path.toLowerCase()
+          ? (nextRecent[0] ?? null)
+          : state.lastScanPath;
+      return { recentLocations: nextRecent, lastScanPath: nextLastScan };
+    });
+    syncPreferences(get());
+  },
+
+  clearRecentLocations: () => {
+    set({ recentLocations: [] });
     syncPreferences(get());
   },
 

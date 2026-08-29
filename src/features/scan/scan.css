@@ -213,6 +213,28 @@
   color: var(--text-secondary);
 }
 
+.location-menu-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  transition: all var(--duration-fast);
+  opacity: 0.7;
+}
+
+.location-menu-clear-btn:hover {
+  opacity: 1;
+  color: var(--danger);
+  background: var(--danger-subtle);
+}
+
 .location-menu-divider {
   height: 1px;
   background: var(--border);

@@ -11,6 +11,7 @@ import {
   Check,
   X,
   History,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/primitives/Button";
 import { IconButton } from "@/components/primitives/IconButton";
@@ -37,6 +38,8 @@ export const ScanHeader: React.FC = () => {
   const addFavorite = usePreferencesStore((s) => s.addFavorite);
   const removeFavorite = usePreferencesStore((s) => s.removeFavorite);
   const addRecentLocation = usePreferencesStore((s) => s.addRecentLocation);
+  const removeRecentLocation = usePreferencesStore((s) => s.removeRecentLocation);
+  const clearRecentLocations = usePreferencesStore((s) => s.clearRecentLocations);
 
   const openModal = useUiStore((s) => s.openModal);
   const showToast = useUiStore((s) => s.showToast);
@@ -302,31 +305,52 @@ export const ScanHeader: React.FC = () => {
                   <div className="location-menu-section">
                     <div className="location-menu-section-header">
                       <span>{t.header.recent}</span>
+                      <button
+                        type="button"
+                        className="location-menu-clear-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          clearRecentLocations();
+                        }}
+                        title={t.favorites.remove}
+                      >
+                        <Trash2 size={11} />
+                        <span>{t.table.actions ? (t.actionBar.clearSelection.includes(" ") ? t.actionBar.clearSelection.split(" ").pop() : t.actionBar.clearSelection) : "Temizle"}</span>
+                      </button>
                     </div>
-                    {recentLocations.slice(0, 3).map((path, idx) => {
+                    {recentLocations.slice(0, 5).map((path, idx) => {
                       const isSelected = currentRootPath?.toLowerCase() === path.toLowerCase();
                       const name = path.split(/[/\\]/).filter(Boolean).pop() || path;
                       return (
-                        <button
+                        <div
                           key={idx}
-                          type="button"
-                          className={`location-menu-item ${isSelected ? "is-selected" : ""}`}
+                          className={`location-menu-item-row ${isSelected ? "is-selected" : ""}`}
                           onClick={() => handleSelectLocation(path)}
-                          title={path}
                         >
                           <div className="location-menu-item-icon recent-icon">
                             <History size={14} />
                           </div>
                           <div className="location-menu-item-info">
                             <span className="location-menu-item-title">{name}</span>
-                            <span className="location-menu-item-path">{truncatePath(path, 34)}</span>
+                            <span className="location-menu-item-path">{truncatePath(path, 30)}</span>
                           </div>
                           {isSelected && (
                             <div className="location-menu-item-check">
                               <Check size={14} />
                             </div>
                           )}
-                        </button>
+                          <button
+                            type="button"
+                            className="location-menu-item-remove"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeRecentLocation(path);
+                            }}
+                            title={t.favorites.remove}
+                          >
+                            <X size={13} />
+                          </button>
+                        </div>
                       );
                     })}
                   </div>
