@@ -1,0 +1,41 @@
+/* Windows Controls (Frameless Titlebar Action Buttons) */
+.window-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-left: 8px;
+  -webkit-app-region: no-drag;
+}
+
+.win-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
+  user-select: none;
+}
+
+.win-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.win-btn:active {
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.win-close:hover {
+  background-color: #E81123 !important;
+  color: #FFFFFF !important;
+}
+
+.win-close:active {
+  background-color: #BF0F1D !important;
+  color: #FFFFFF !important;
+}

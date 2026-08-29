@@ -1,0 +1,67 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Node Cleaner",
+  "version": "1.0.0",
+  "identifier": "com.vellium.nodecleaner",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1425",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Node Cleaner",
+        "url": "index.html",
+        "width": 1180,
+        "height": 760,
+        "minWidth": 980,
+        "minHeight": 640,
+        "resizable": true,
+        "fullscreen": false,
+        "transparent": false,
+        "decorations": false,
+        "center": true,
+        "shadow": true,
+        "visible": true,
+        "focus": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Vellium",
+    "homepage": "https://vellium.dev",
+    "license": "Proprietary",
+    "category": "DeveloperTool",
+    "copyright": "© 2026 Vellium. Tüm hakları saklıdır.",
+    "shortDescription": "Projelerinizdeki node_modules klasörlerini hızlıca bulun ve güvenle temizleyin.",
+    "longDescription": "Node Cleaner, yazılım projelerinizde biriken node_modules klasörlerini hızlı biçimde tarayan ve kapladıkları disk alanını görüntüleyen yerel bir Windows geliştirici aracıdır. Seçtiğiniz klasörleri Windows Çöp Kutusu'na taşıyabilir veya açık onayla kalıcı olarak silebilirsiniz. Uygulama tamamen yerel çalışır ve arka planda otomatik tarama yapmaz.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "windows": {
+      "wix": {
+        "language": ["tr-TR", "en-US"]
+      },
+      "nsis": {
+        "displayLanguageSelector": false,
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "nsis/header.bmp",
+        "sidebarImage": "nsis/sidebar.bmp",
+        "installMode": "currentUser",
+        "languages": ["Turkish", "English"]
+      }
+    }
+  }
+}

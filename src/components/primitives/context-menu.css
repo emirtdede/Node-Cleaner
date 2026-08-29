@@ -1,0 +1,77 @@
+.context-menu-container {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  padding: 6px;
+  background: var(--surface-strong);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 1px var(--glass-inner-highlight);
+  z-index: 9999;
+  animation: contextMenuFadeIn 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  transform-origin: top left;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.context-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--duration-fast) var(--ease-standard);
+  width: 100%;
+}
+
+.context-menu-item:hover {
+  background: var(--accent-subtle);
+  color: var(--text-primary);
+}
+
+.context-menu-item:active {
+  background: rgba(10, 132, 255, 0.3);
+}
+
+.context-menu-item.danger {
+  color: var(--danger);
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(255, 69, 58, 0.15);
+  color: var(--danger);
+}
+
+.context-menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.context-menu-item.danger .context-menu-icon {
+  color: var(--danger);
+}
+
+.context-menu-item:hover .context-menu-icon {
+  color: inherit;
+}

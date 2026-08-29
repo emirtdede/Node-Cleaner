@@ -1,0 +1,44 @@
+[package]
+name = "node-cleaner"
+version = "1.0.0"
+description = "Projelerinizdeki node_modules klasörlerini hızlıca bulun ve güvenle temizleyin."
+authors = ["Vellium"]
+edition = "2021"
+
+[lib]
+name = "node_cleaner_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4.44", features = ["serde"] }
+tokio = { version = "1.49.0", features = ["full"] }
+trash = "5"
+walkdir = "2"
+
+[profile.dev]
+codegen-units = 1
+incremental = false
+
+[profile.test]
+codegen-units = 1
+incremental = false
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.58", features = [
+    "Win32_UI_Shell",
+    "Win32_System_Com",
+    "Win32_Storage_FileSystem",
+    "Win32_Foundation",
+    "Win32_System_Threading"
+] }
+
+[dev-dependencies]
+tempfile = "3"
