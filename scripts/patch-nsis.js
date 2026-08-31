@@ -131,51 +131,15 @@ const preMuiHeaderConfig = `; ==================================================
 
 nsiContent = nsiContent.replace("!include MUI2.nsh", `${preMuiHeaderConfig}\n!include MUI2.nsh`);
 
-// F. Sayfa geçişlerine Header Hizalama Hook'larını ekle
-// 1. Directory page
-if (!nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\r\n!insertmacro MUI_PAGE_DIRECTORY") &&
-    !nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_DIRECTORY")) {
-  nsiContent = nsiContent.replace(
-    "!insertmacro MUI_PAGE_DIRECTORY",
-    "!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_DIRECTORY"
-  );
-}
-
-// 2. Uninstaller Confirm page (inside un.ConfirmShow)
-if (!nsiContent.includes("Call un.AlignHeaderTexts")) {
-  nsiContent = nsiContent.replace(
-    "Function un.ConfirmShow ; Add add a `Delete app data` check box",
-    "Function un.ConfirmShow ; Add add a `Delete app data` check box\n  Call un.AlignHeaderTexts"
-  );
-}
-
-// 3. Reinstall page
-if (!nsiContent.includes("Call AlignHeaderTexts")) {
-  nsiContent = nsiContent.replace(
-    "Function PageReinstall",
-    "Function PageReinstall\n  Call AlignHeaderTexts"
-  );
-}
-
-// G. WinAPI ile Başlık (1037) ve Alt Başlık (1038) Sol Hizalama Fonksiyonlarını Ekle
+// F. WinAPI ile Başlık (1037) ve Alt Başlık (1038) Sol Hizalama Fonksiyonlarını Ekle
 const alignFunctions = `
 ; =========================================================================
 ; WINAPI PIXEL-PERFECT HEADER TEXT ALIGNMENT (Title: 1037, Subtitle: 1038)
-; Align Subtitle (1038) X position with Title (1037) X position
+; Align Subtitle (1038) X position with Title (1037) X position on $HWNDPARENT
 ; =========================================================================
 Function AlignHeaderTexts
   GetDlgItem $1 $HWNDPARENT 1037
   GetDlgItem $2 $HWNDPARENT 1038
-  StrCpy $0 $HWNDPARENT
-
-  \${If} $1 == 0
-  \${OrIf} $2 == 0
-    FindWindow $0 "#32770" "" $HWNDPARENT
-    \${If} $0 != 0
-      GetDlgItem $1 $0 1037
-      GetDlgItem $2 $0 1038
-    \${EndIf}
-  \${EndIf}
 
   \${If} $1 != 0
   \${AndIf} $2 != 0
@@ -191,14 +155,14 @@ Function AlignHeaderTexts
     ; Subtitle rect (left:$R0, top:$R1, right:$R2, bottom:$R3)
     System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
 
-    ; Convert Title top-left to client coords relative to parent $0
+    ; Convert Title top-left to client coords relative to $HWNDPARENT
     System::Call "*$5(i r6, i r7)"
-    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "user32::ScreenToClient(p $HWNDPARENT, p r5)"
     System::Call "*$5(i .r6, i .r7)"
 
-    ; Convert Subtitle top-left to client coords relative to parent $0
+    ; Convert Subtitle top-left to client coords relative to $HWNDPARENT
     System::Call "*$5(i r10, i r11)"
-    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "user32::ScreenToClient(p $HWNDPARENT, p r5)"
     System::Call "*$5(i .r10, i .r11)"
 
     ; Calculate Subtitle width ($R4) and height ($R5)
@@ -224,16 +188,6 @@ FunctionEnd
 Function un.AlignHeaderTexts
   GetDlgItem $1 $HWNDPARENT 1037
   GetDlgItem $2 $HWNDPARENT 1038
-  StrCpy $0 $HWNDPARENT
-
-  \${If} $1 == 0
-  \${OrIf} $2 == 0
-    FindWindow $0 "#32770" "" $HWNDPARENT
-    \${If} $0 != 0
-      GetDlgItem $1 $0 1037
-      GetDlgItem $2 $0 1038
-    \${EndIf}
-  \${EndIf}
 
   \${If} $1 != 0
   \${AndIf} $2 != 0
@@ -248,11 +202,11 @@ Function un.AlignHeaderTexts
     System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
 
     System::Call "*$5(i r6, i r7)"
-    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "user32::ScreenToClient(p $HWNDPARENT, p r5)"
     System::Call "*$5(i .r6, i .r7)"
 
     System::Call "*$5(i r10, i r11)"
-    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "user32::ScreenToClient(p $HWNDPARENT, p r5)"
     System::Call "*$5(i .r10, i .r11)"
 
     IntOp $R4 $R2 - $R0
