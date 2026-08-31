@@ -123,10 +123,10 @@ Function AlignHeaderTexts
     System::Call "user32::GetWindowRect(p r1, p r3)"
     System::Call "user32::GetWindowRect(p r2, p r4)"
 
-    ; Title rect (left:$6, top:$7, right:$8, bottom:$9)
+    ; Title rect: left=$6, top=$7, right=$8, bottom=$9
     System::Call "*$3(i .r6, i .r7, i .r8, i .r9)"
-    ; Subtitle rect (left:$R0, top:$R1, right:$R2, bottom:$R3)
-    System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
+    ; Subtitle rect: left=$R0, top=$R1, right=$R2, bottom=$R3
+    System::Call "*$4(i .R0, i .R1, i .R2, i .R3)"
 
     ; Convert Title top-left to client coords relative to $HWNDPARENT
     System::Call "*$5(i r6, i r7)"
@@ -134,9 +134,9 @@ Function AlignHeaderTexts
     System::Call "*$5(i .r6, i .r7)"
 
     ; Convert Subtitle top-left to client coords relative to $HWNDPARENT
-    System::Call "*$5(i r10, i r11)"
+    System::Call "*$5(i R0, i R1)"
     System::Call "user32::ScreenToClient(p $HWNDPARENT, p r5)"
-    System::Call "*$5(i .r10, i .r11)"
+    System::Call "*$5(i .R0, i .R1)"
 
     ; Calculate Subtitle width ($R4) and height ($R5)
     IntOp $R4 $R2 - $R0
@@ -150,7 +150,7 @@ Function AlignHeaderTexts
 
     ; Set Subtitle X position to Title X position ($6)
     ; SWP_NOZORDER (0x0004) | SWP_NOACTIVATE (0x0010) = 0x0014
-    System::Call "user32::SetWindowPos(p r2, p 0, i r6, i r11, i r14, i r15, i 0x0014)"
+    System::Call "user32::SetWindowPos(p r2, p 0, i r6, i R1, i R4, i R5, i 0x0014)"
 
     System::Free $3
     System::Free $4
@@ -172,15 +172,15 @@ Function un.AlignHeaderTexts
     System::Call "user32::GetWindowRect(p r2, p r4)"
 
     System::Call "*$3(i .r6, i .r7, i .r8, i .r9)"
-    System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
+    System::Call "*$4(i .R0, i .R1, i .R2, i .R3)"
 
     System::Call "*$5(i r6, i r7)"
     System::Call "user32::ScreenToClient(p $HWNDPARENT, p r5)"
     System::Call "*$5(i .r6, i .r7)"
 
-    System::Call "*$5(i r10, i r11)"
+    System::Call "*$5(i R0, i R1)"
     System::Call "user32::ScreenToClient(p $HWNDPARENT, p r5)"
-    System::Call "*$5(i .r10, i .r11)"
+    System::Call "*$5(i .R0, i .R1)"
 
     IntOp $R4 $R2 - $R0
     IntOp $R5 $R3 - $R1
@@ -190,7 +190,7 @@ Function un.AlignHeaderTexts
       IntOp $R4 $R4 + $R6
     \${EndIf}
 
-    System::Call "user32::SetWindowPos(p r2, p 0, i r6, i r11, i r14, i r15, i 0x0014)"
+    System::Call "user32::SetWindowPos(p r2, p 0, i r6, i R1, i R4, i R5, i 0x0014)"
 
     System::Free $3
     System::Free $4
