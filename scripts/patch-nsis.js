@@ -65,26 +65,10 @@ if (!nsiPath) {
 }
 console.log(`✓ installer.nsi: ${nsiPath}`);
 
-// 4. installer.nsi dosyasını oku ve temiz/baştan yamala
+// 4. installer.nsi dosyasını oku
 let nsiContent = fs.readFileSync(nsiPath, "utf8");
 
-// A. Dosyanın sonuna eklenmiş önceki fonksiyonları temizle
-const desktopShortcutEnd = '!insertmacro SetLnkAppUserModelId "$DESKTOP\\${PRODUCTNAME}.lnk"';
-const endIdx = nsiContent.indexOf(desktopShortcutEnd);
-if (endIdx !== -1) {
-  const funcEndIdx = nsiContent.indexOf("FunctionEnd", endIdx);
-  if (funcEndIdx !== -1) {
-    nsiContent = nsiContent.substring(0, funcEndIdx + "FunctionEnd".length);
-  }
-}
-
-// B. Daha önce eklenmiş MUI2 öncesi bloğu temizle
-nsiContent = nsiContent.replace(
-  /; =========================================================================\r?\n; MODERN UI 2 HEADER & ICON CONFIGURATION[\s\S]*?!include MUI2\.nsh/g,
-  "!include MUI2.nsh"
-);
-
-// C. Temel Değişken Tanımlarını Güncelle
+// A. Uninstaller ikon ve header tanımlarını bağla
 nsiContent = nsiContent.replace(
   /!define UNINSTALLERICON ""/g,
   '!define UNINSTALLERICON "${INSTALLERICON}"'
@@ -94,52 +78,31 @@ nsiContent = nsiContent.replace(
   '!define UNINSTALLERHEADERIMAGE "${HEADERIMAGE}"'
 );
 
-// D. Post-MUI2 kısmındaki duplicate MUI_ICON / MUI_HEADERIMAGE / MUI_UNICON bloklarını kaldır
-const legacyIconsBlockRegex = /; Installer icon[\s\S]*?; Define registry key to store installer language/g;
-const replacementIconsBlock = `; Installer sidebar image
-!if "\${SIDEBARIMAGE}" != ""
-  !define MUI_WELCOMEFINISHPAGE_BITMAP "\${SIDEBARIMAGE}"
-  !define MUI_UNWELCOMEFINISHPAGE_BITMAP "\${SIDEBARIMAGE}"
-!endif
+// B. Header Image tanımlarını sağa yaslı (MUI_HEADERIMAGE_RIGHT) olarak güncelle
+const headerEnableBlock = `; Enable header images for installer and uninstaller pages when either image is configured.
+!if "\${HEADERIMAGE}" != ""
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_RIGHT
+!else if "\${UNINSTALLERHEADERIMAGE}" != ""
+  !define MUI_HEADERIMAGE
+  !define MUI_HEADERIMAGE_RIGHT
+!endif`;
 
-; Define registry key to store installer language`;
+nsiContent = nsiContent.replace(
+  /; Enable header images for installer and uninstaller pages when either image is configured\.[\s\S]*?!endif/,
+  headerEnableBlock
+);
 
-if (legacyIconsBlockRegex.test(nsiContent)) {
-  nsiContent = nsiContent.replace(legacyIconsBlockRegex, replacementIconsBlock);
-} else {
-  nsiContent = nsiContent.replace(/!define MUI_ICON "\${INSTALLERICON}"/g, "; [MOVED] !define MUI_ICON");
-  nsiContent = nsiContent.replace(/!define MUI_UNICON "\${UNINSTALLERICON}"/g, "; [MOVED] !define MUI_UNICON");
-  nsiContent = nsiContent.replace(/!define MUI_HEADERIMAGE/g, "; [MOVED] !define MUI_HEADERIMAGE");
-  nsiContent = nsiContent.replace(/!define MUI_HEADERIMAGE_BITMAP "\${HEADERIMAGE}"/g, "; [MOVED] !define MUI_HEADERIMAGE_BITMAP");
-  nsiContent = nsiContent.replace(/!define MUI_HEADERIMAGE_UNBITMAP "\${UNINSTALLERHEADERIMAGE}"/g, "; [MOVED] !define MUI_HEADERIMAGE_UNBITMAP");
-}
-
-// E. !include MUI2.nsh satırının ÖNCESİNE GUIINIT ve ikon tanımlarını ekle
-const preMuiHeaderConfig = `; =========================================================================
-; MODERN UI 2 ICONS & GUIINIT HOOKS (Placed before MUI2.nsh)
-; =========================================================================
-!define MUI_ICON "${iconIcoPath}"
-!define MUI_UNICON "${iconIcoPath}"
-!define MUI_CUSTOMFUNCTION_GUIINIT AlignHeaderTexts
+// C. GUIINIT hook'larını !include MUI2.nsh öncesine ekle
+const guiInitDefines = `!define MUI_CUSTOMFUNCTION_GUIINIT AlignHeaderTexts
 !define MUI_CUSTOMFUNCTION_UNGUIINIT un.AlignHeaderTexts
 `;
 
-nsiContent = nsiContent.replace("!include MUI2.nsh", `${preMuiHeaderConfig}\n!include MUI2.nsh`);
+if (!nsiContent.includes("AlignHeaderTexts")) {
+  nsiContent = nsiContent.replace("!include MUI2.nsh", `${guiInitDefines}!include MUI2.nsh`);
 
-// E2. Header Image tanımlarını sağa yaslı olarak ayarla
-const headerImageConfig = `; Installer header image
-!define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "${headerBmpPath}"
-!define MUI_HEADERIMAGE_UNBITMAP "${headerBmpPath}"`;
-
-nsiContent = nsiContent.replace(
-  /; Installer header image[\s\S]*?!endif/g,
-  headerImageConfig
-);
-
-// F. WinAPI ile Başlık (1037) ve Alt Başlık (1038) Sol Hizalama Fonksiyonlarını Ekle
-const alignFunctions = `
+  // D. WinAPI Başlık (1037) ve Alt Başlık (1038) Sol Hizalama Fonksiyonlarını Ekle
+  const alignFunctions = `
 ; =========================================================================
 ; WINAPI PIXEL-PERFECT HEADER TEXT ALIGNMENT (Title: 1037, Subtitle: 1038)
 ; Align Subtitle (1038) X position with Title (1037) X position on $HWNDPARENT
@@ -233,7 +196,8 @@ Function un.AlignHeaderTexts
 FunctionEnd
 `;
 
-nsiContent += `\n${alignFunctions}\n`;
+  nsiContent += `\n${alignFunctions}\n`;
+}
 
 // 5. Yamalanmış .nsi dosyasını diske kaydet
 fs.writeFileSync(nsiPath, nsiContent, "utf8");
