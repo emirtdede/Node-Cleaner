@@ -141,16 +141,7 @@ if (!nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\
   );
 }
 
-// 2. Instfiles page
-if (!nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\r\n!insertmacro MUI_PAGE_INSTFILES") &&
-    !nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_INSTFILES")) {
-  nsiContent = nsiContent.replace(
-    "!insertmacro MUI_PAGE_INSTFILES",
-    "!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_INSTFILES"
-  );
-}
-
-// 3. Uninstaller Confirm page (inside un.ConfirmShow)
+// 2. Uninstaller Confirm page (inside un.ConfirmShow)
 if (!nsiContent.includes("Call un.AlignHeaderTexts")) {
   nsiContent = nsiContent.replace(
     "Function un.ConfirmShow ; Add add a `Delete app data` check box",
@@ -158,16 +149,7 @@ if (!nsiContent.includes("Call un.AlignHeaderTexts")) {
   );
 }
 
-// 4. Uninstaller Instfiles page
-if (!nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.AlignHeaderTexts\r\n!insertmacro MUI_UNPAGE_INSTFILES") &&
-    !nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.AlignHeaderTexts\n!insertmacro MUI_UNPAGE_INSTFILES")) {
-  nsiContent = nsiContent.replace(
-    "!insertmacro MUI_UNPAGE_INSTFILES",
-    "!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.AlignHeaderTexts\n!insertmacro MUI_UNPAGE_INSTFILES"
-  );
-}
-
-// 5. Reinstall page
+// 3. Reinstall page
 if (!nsiContent.includes("Call AlignHeaderTexts")) {
   nsiContent = nsiContent.replace(
     "Function PageReinstall",

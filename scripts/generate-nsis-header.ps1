@@ -16,8 +16,8 @@ $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
 $g.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
 
 $icon = [System.Drawing.Image]::FromFile($iconPath)
-$targetSize = 46
-$x = 150 - $targetSize - 8
+$targetSize = 34
+$x = 150 - $targetSize - 16
 $y = [Math]::Round((57 - $targetSize) / 2)
 
 $g.DrawImage($icon, $x, $y, $targetSize, $targetSize)
