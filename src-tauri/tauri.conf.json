@@ -58,7 +58,9 @@
         "displayLanguageSelector": false,
         "installerIcon": "icons/icon.ico",
         "headerImage": "nsis/header.bmp",
+        "uninstallerHeaderImage": "nsis/unheader.bmp",
         "sidebarImage": "nsis/sidebar.bmp",
+        "installerHooks": "nsis/hooks.nsh",
         "installMode": "currentUser",
         "languages": ["Turkish", "English"]
       }
