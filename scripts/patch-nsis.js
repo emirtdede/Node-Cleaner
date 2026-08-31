@@ -114,15 +114,10 @@ if (legacyIconsBlockRegex.test(nsiContent)) {
   nsiContent = nsiContent.replace(/!define MUI_HEADERIMAGE_UNBITMAP "\${UNINSTALLERHEADERIMAGE}"/g, "; [MOVED] !define MUI_HEADERIMAGE_UNBITMAP");
 }
 
-// E. !include MUI2.nsh satırının ÖNCESİNE tanımları ve GUIINIT hook'larını ekle
+// E. !include MUI2.nsh satırının ÖNCESİNE GUIINIT ve ikon tanımlarını ekle
 const preMuiHeaderConfig = `; =========================================================================
-; MODERN UI 2 HEADER & ICON CONFIGURATION (Placed strictly BEFORE MUI2.nsh)
-; Forces modern_headerbmpr.exe right-aligned bitmap template and sets icons
+; MODERN UI 2 ICONS & GUIINIT HOOKS (Placed before MUI2.nsh)
 ; =========================================================================
-!define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "${headerBmpPath}"
-!define MUI_HEADERIMAGE_UNBITMAP "${headerBmpPath}"
 !define MUI_ICON "${iconIcoPath}"
 !define MUI_UNICON "${iconIcoPath}"
 !define MUI_CUSTOMFUNCTION_GUIINIT AlignHeaderTexts
@@ -130,6 +125,18 @@ const preMuiHeaderConfig = `; ==================================================
 `;
 
 nsiContent = nsiContent.replace("!include MUI2.nsh", `${preMuiHeaderConfig}\n!include MUI2.nsh`);
+
+// E2. Header Image tanımlarını sağa yaslı olarak ayarla
+const headerImageConfig = `; Installer header image
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_RIGHT
+!define MUI_HEADERIMAGE_BITMAP "${headerBmpPath}"
+!define MUI_HEADERIMAGE_UNBITMAP "${headerBmpPath}"`;
+
+nsiContent = nsiContent.replace(
+  /; Installer header image[\s\S]*?!endif/g,
+  headerImageConfig
+);
 
 // F. WinAPI ile Başlık (1037) ve Alt Başlık (1038) Sol Hizalama Fonksiyonlarını Ekle
 const alignFunctions = `
