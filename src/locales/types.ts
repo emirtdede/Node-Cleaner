@@ -156,6 +156,7 @@ export interface TranslationSchema {
     privacyNote: string;
     close: string;
   };
+  legal?: LegalSchema;
   errors: {
     invalidPath: string;
     accessDenied: string;
@@ -183,3 +184,34 @@ export interface TranslationSchema {
     reload: string;
   };
 }
+
+export interface LegalSchema {
+  sectionTitle: string;
+  back: string;
+  velliumItemTitle: string;
+  velliumItemDesc: string;
+  privacyItemTitle: string;
+  privacyItemDesc: string;
+  termsItemTitle: string;
+  termsItemDesc: string;
+  securityItemTitle: string;
+  securityItemDesc: string;
+  licensesItemTitle: string;
+  licensesItemDesc: string;
+  visitWebsite: string;
+  officialWebsite: string;
+  allRightsReserved: string;
+  velliumTagline: string;
+  velliumManifesto: string[];
+  privacyIntro: string;
+  privacySections: Array<{ title: string; content: string }>;
+  termsIntro: string;
+  termsSections: Array<{ title: string; content: string }>;
+  securityIntro: string;
+  securitySections: Array<{ title: string; content: string }>;
+  licensesIntro: string;
+  licensesList: Array<{ name: string; version: string; license: string; description: string; url: string }>;
+}
+
+export type FullTranslationSchema = TranslationSchema & { legal: LegalSchema };
+

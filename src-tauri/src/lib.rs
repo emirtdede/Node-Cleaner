@@ -58,6 +58,7 @@ pub fn run() {
             cancel_scan,
             get_known_locations,
             open_path_in_explorer,
+            open_url,
             delete_node_modules,
             get_app_settings,
             save_app_settings

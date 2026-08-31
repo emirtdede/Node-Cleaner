@@ -60,4 +60,27 @@ describe("73-Language i18n Engine & Localization Tests", () => {
     t = getTranslation("tr");
     expect(t.header.scan).toBe("Tara");
   });
+
+  it("provides comprehensive legal and Vellium company translations with fallback", () => {
+    const tTr = getTranslation("tr");
+    expect(tTr.legal.sectionTitle).toBe("Yasal Bilgiler & Kurumsal");
+    expect(tTr.legal.velliumItemTitle).toBe("Vellium Hakkında");
+    expect(tTr.legal.velliumManifesto).toHaveLength(5);
+    expect(tTr.legal.privacySections).toHaveLength(4);
+    expect(tTr.legal.termsSections).toHaveLength(4);
+    expect(tTr.legal.securitySections).toHaveLength(4);
+    expect(tTr.legal.licensesList.length).toBeGreaterThan(5);
+
+    const tEn = getTranslation("en");
+    expect(tEn.legal.sectionTitle).toBe("Legal Information & Corporate");
+    expect(tEn.legal.velliumItemTitle).toBe("About Vellium");
+    expect(tEn.legal.velliumManifesto[0]).toContain("Vellium builds enduring software systems");
+
+    // Test fallback on other languages (e.g. "de")
+    const tDe = getTranslation("de");
+    expect(tDe.legal).toBeDefined();
+    expect(tDe.legal.velliumItemTitle).toBeTruthy();
+    expect(tDe.legal.privacySections.length).toBeGreaterThan(0);
+  });
 });
+

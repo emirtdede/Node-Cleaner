@@ -22,6 +22,7 @@ export interface ScannerApi {
   cancelScan(): Promise<void>;
   getKnownLocations(): Promise<KnownLocation[]>;
   openPathInExplorer(path: string): Promise<void>;
+  openUrl(url: string): Promise<void>;
   selectFolderDialog(): Promise<string | null>;
   deleteNodeModules(paths: string[], mode: DeleteMode): Promise<DeletionReport>;
   getAppSettings(): Promise<UserPreferences>;
@@ -86,6 +87,20 @@ export const scannerApi: ScannerApi = {
       await invoke("open_path_in_explorer", { path });
     } else {
       console.log("[Explorer]", path);
+    }
+  },
+
+  async openUrl(url: string): Promise<void> {
+    if (isTauriEnvironment()) {
+      try {
+        await invoke("open_url", { url });
+        return;
+      } catch (err) {
+        console.error("[openUrl error]", err);
+      }
+    }
+    if (typeof window !== "undefined") {
+      window.open(url, "_blank", "noopener,noreferrer");
     }
   },
 

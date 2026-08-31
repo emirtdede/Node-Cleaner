@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SETTINGS PANEL & THEME GRID STYLES (%100 Responsive)
+   SETTINGS PANEL & THEME GRID STYLES (%100 Responsive & Theme Adaptive)
    ========================================================================== */
 
 .settings-body {
@@ -16,6 +16,47 @@
   margin-bottom: 12px;
 }
 
+/* Subview Header with Back Navigation */
+.settings-subview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings-header-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.settings-header-back-btn:hover {
+  background: var(--surface-active);
+  border-color: var(--accent);
+}
+
+.settings-header-separator {
+  color: var(--border-strong);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  user-select: none;
+}
+
+.settings-header-subview-title {
+  font-size: var(--text-base);
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+/* Theme Group & Cards */
 .theme-group {
   margin-bottom: 16px;
   width: 100%;
@@ -108,4 +149,455 @@
 .theme-card-check {
   flex-shrink: 0;
   color: var(--accent);
+}
+
+/* ==========================================================================
+   LEGAL NAVIGATION MENU IN SETTINGS PANEL
+   ========================================================================== */
+
+.legal-nav-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.legal-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+  text-align: left;
+  user-select: none;
+  width: 100%;
+}
+
+.legal-nav-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  transform: translateX(2px);
+}
+
+.legal-nav-btn.vellium-highlight-btn {
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-hover) 100%);
+  border: 1px solid var(--border-strong);
+}
+
+.legal-nav-btn.vellium-highlight-btn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.legal-nav-btn-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.legal-nav-icon-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.legal-nav-btn:hover .legal-nav-icon-wrap {
+  background: var(--surface-active);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.legal-nav-icon-wrap.vellium-icon-wrap {
+  color: var(--text-primary);
+  background: var(--surface-active);
+}
+
+.legal-nav-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.legal-nav-title {
+  font-size: var(--text-xs);
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.legal-nav-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.legal-nav-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.legal-nav-btn:hover .legal-nav-chevron {
+  color: var(--text-primary);
+  transform: translateX(2px);
+}
+
+/* ==========================================================================
+   LEGAL SUBVIEW PAGES COMMON STYLES
+   ========================================================================== */
+
+.legal-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  animation: fadeIn 0.18s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.legal-header-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.legal-header-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.legal-header-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.legal-header-subtitle {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin: 3px 0 0 0;
+  line-height: 1.4;
+}
+
+.legal-badge-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.legal-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.legal-sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.legal-section-card {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legal-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legal-section-icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.legal-section-title {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.legal-paragraph {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.legal-footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--separator);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   VELLIUM CORPORATE PAGE STYLES
+   ========================================================================== */
+
+.vellium-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-hover) 100%);
+  border: 1px solid var(--border-strong);
+}
+
+.vellium-hero-logo-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vellium-hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vellium-hero-title {
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.vellium-hero-tagline {
+  font-size: var(--text-xs);
+  font-weight: 550;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.vellium-site-link-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vellium-site-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-size: var(--text-xs);
+  font-weight: 650;
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-standard);
+  text-decoration: none;
+}
+
+.vellium-site-btn:hover {
+  background: var(--surface-hover);
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.vellium-site-icon {
+  color: var(--text-secondary);
+}
+
+.vellium-site-ext {
+  color: var(--text-muted);
+}
+
+.vellium-site-btn:hover .vellium-site-ext {
+  color: var(--text-primary);
+}
+
+.vellium-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.legal-content-card {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.vellium-manifesto-para {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* ==========================================================================
+   LICENSES CATALOG STYLES
+   ========================================================================== */
+
+.licenses-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.license-card-icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 540px) {
+  .licenses-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.license-card {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+
+.license-card:hover {
+  border-color: var(--border-strong);
+}
+
+.license-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.license-card-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.license-card-name {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.license-card-version {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.license-card-badge {
+  font-size: 9.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.license-card-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.license-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
+.license-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--accent);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  font-family: var(--font-mono);
+}
+
+.license-card-link:hover {
+  text-decoration: underline;
 }

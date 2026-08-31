@@ -1,21 +1,35 @@
 import { usePreferencesStore } from "@/stores/preferences-store";
 import { SupportedLanguage } from "@/types";
-import { DICTIONARIES, TranslationSchema } from "@/locales/dictionaries";
+import { DICTIONARIES } from "@/locales/dictionaries";
+import { TranslationSchema, LegalSchema, FullTranslationSchema } from "@/locales/types";
 import { LANGUAGES_LIST, detectSystemLanguage, isRtlLanguage } from "@/locales/languages";
+import trDict from "@/locales/langs/tr";
+import enDict from "@/locales/langs/en";
 
 export { LANGUAGES_LIST, detectSystemLanguage, isRtlLanguage };
-export type { TranslationSchema };
+export type { TranslationSchema, LegalSchema, FullTranslationSchema };
 
-export function getTranslation(lang?: SupportedLanguage): TranslationSchema {
+export function getTranslation(lang?: SupportedLanguage): FullTranslationSchema {
   const currentLang = lang || usePreferencesStore.getState().language || "en";
-  return DICTIONARIES[currentLang] || DICTIONARIES["en"] || DICTIONARIES["tr"];
+  const dict = DICTIONARIES[currentLang] || DICTIONARIES["en"] || DICTIONARIES["tr"];
+  const legal = (dict.legal || (currentLang === "tr" ? trDict.legal : enDict.legal)) as LegalSchema;
+  return {
+    ...dict,
+    legal,
+  };
 }
 
 export function useI18n() {
   const language = usePreferencesStore((s) => s.language) || "en";
   const setLanguage = usePreferencesStore((s) => s.setLanguage);
   const isRtl = isRtlLanguage(language);
-  const t = DICTIONARIES[language] || DICTIONARIES["en"] || DICTIONARIES["tr"];
+  const dict = DICTIONARIES[language] || DICTIONARIES["en"] || DICTIONARIES["tr"];
+  const legal = (dict.legal || (language === "tr" ? trDict.legal : enDict.legal)) as LegalSchema;
+
+  const t: FullTranslationSchema = {
+    ...dict,
+    legal,
+  };
 
   return {
     language,

@@ -314,7 +314,7 @@
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
   overflow-y: auto;
-  max-height: 65vh;
+  max-height: 74vh;
 }
 .dialog-body::-webkit-scrollbar {
   width: 6px;

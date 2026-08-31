@@ -10,11 +10,29 @@ const rootDir = path.resolve(__dirname, "..");
 const releaseOutputDir = path.join(rootDir, "release_output");
 
 console.log("=================================================");
-console.log("🚀 Node Cleaner - Tek Tıkla Release & Hash Üretici");
+console.log("🚀 Node Cleaner - Profesyonel Release & NSIS Derleyici");
 console.log("=================================================\n");
 
+// 0. Eski Çalışan Süreçleri Kapat ve Eski Çıktıları Temizle
+console.log("🧹 0. Eski derleme kalıntıları ve çalışan süreçler temizleniyor...");
+try {
+  execSync("taskkill /F /IM node-cleaner.exe /IM Node-Cleaner-1.0.0-Portable.exe /IM Node-Cleaner-1.0.0-x64-Setup.exe 2>nul", { stdio: "ignore" });
+} catch {}
+
+if (fs.existsSync(releaseOutputDir)) {
+  const oldFiles = fs.readdirSync(releaseOutputDir);
+  for (const f of oldFiles) {
+    try {
+      fs.unlinkSync(path.join(releaseOutputDir, f));
+    } catch {}
+  }
+} else {
+  fs.mkdirSync(releaseOutputDir, { recursive: true });
+}
+console.log("✓ release_output temizlendi.");
+
 // 1. Sürüm Senkronizasyonunu Doğrula
-console.log("📦 1. Sürüm senkronizasyonu kontrol ediliyor...");
+console.log("\n📦 1. Sürüm senkronizasyonu kontrol ediliyor...");
 try {
   execSync("npm run check-version", { cwd: rootDir, stdio: "inherit" });
 } catch (err) {
@@ -22,27 +40,43 @@ try {
   process.exit(1);
 }
 
-// 2. Tauri Release Derlemesi
-console.log("\n🔨 2. Tauri Release derlemesi başlatılıyor (Optimized x64)...");
+// 2. 150x57 Saf Beyaz (#FFFFFF) Sağ Hizalı Header Bitmap Üret
+console.log("\n🎨 2. 150x57 px saf beyaz zeminli sağa yaslı NSIS header bitmap üretiliyor...");
+const genHeaderScript = path.join(rootDir, "scripts", "generate-nsis-header.ps1");
 try {
-  execSync("npm run tauri build", { cwd: rootDir, stdio: "inherit" });
+  execSync(`powershell.exe -ExecutionPolicy Bypass -File "${genHeaderScript}"`, {
+    cwd: rootDir,
+    stdio: "inherit",
+  });
 } catch (err) {
-  console.error("❌ Derleme işlemi başarısız oldu!");
+  console.error("❌ Header bitmap üretimi başarısız oldu:", err);
   process.exit(1);
 }
 
-// 3. Çıktı Klasörünü Hazırla
-if (!fs.existsSync(releaseOutputDir)) {
-  fs.mkdirSync(releaseOutputDir, { recursive: true });
+// 3. Tauri Release Derlemesi
+console.log("\n🔨 3. Tauri Release derlemesi başlatılıyor (Optimized x64)...");
+try {
+  execSync("npm run tauri build", { cwd: rootDir, stdio: "inherit" });
+} catch (err) {
+  console.error("❌ Tauri derleme işlemi başarısız oldu!");
+  process.exit(1);
 }
 
-// Eğer arka planda çalışan eski portable veya test örneği varsa kapat
+// 4. NSIS installer.nsi Dosyasını Yamala ve makensis.exe ile Yeniden Derle
+console.log("\n🛠️  4. NSIS Modern UI 2 şablonu ve WinAPI hizalaması yamalanıyor...");
+const patchScript = path.join(rootDir, "scripts", "patch-nsis.js");
 try {
-  execSync("taskkill /F /IM node-cleaner.exe /IM Node-Cleaner-1.0.0-Portable.exe 2>nul", { stdio: "ignore" });
-} catch {}
+  execSync(`node "${patchScript}"`, {
+    cwd: rootDir,
+    stdio: "inherit",
+  });
+} catch (err) {
+  console.error("❌ NSIS yamalama ve derleme işlemi başarısız oldu!");
+  process.exit(1);
+}
 
-// 4. Target dizinlerini tara ve dosyaları kopyala
-console.log("\n📂 3. Derlenen binary paketleri release_output klasörüne kopyalanıyor...");
+// 5. Target dizinlerini tara ve dosyaları kopyala
+console.log("\n📂 5. Nihai binary paketleri release_output klasörüne aktarılıyor...");
 
 const possibleTargetDirs = [
   "C:\\Users\\emir\\AppData\\Local\\Temp\\node_cleaner_target\\release",
@@ -87,8 +121,7 @@ for (const art of artifacts) {
         copied = true;
         break;
       } catch {
-        // Retry delay
-        execSync("taskkill /F /IM node-cleaner.exe /IM Node-Cleaner-1.0.0-Portable.exe 2>nul", { stdio: "ignore" });
+        execSync("taskkill /F /IM node-cleaner.exe /IM Node-Cleaner-1.0.0-Portable.exe /IM Node-Cleaner-1.0.0-x64-Setup.exe 2>nul", { stdio: "ignore" });
       }
     }
     if (copied) {
@@ -109,8 +142,8 @@ if (fs.existsSync(verifyScript)) {
   console.log(`  ✓ Kopyalandı: verify-checksums.bat`);
 }
 
-// 5. SHA-256 Hash'lerini Otomatik Hesapla ve SHA256SUMS.txt Yaz
-console.log("\n🔐 4. SHA-256 hash özetleri hesaplanıyor...");
+// 6. SHA-256 Hash'lerini Otomatik Hesapla ve SHA256SUMS.txt Yaz
+console.log("\n🔐 6. SHA-256 hash özetleri hesaplanıyor...");
 const validFiles = [
   "Node-Cleaner-1.0.0-Portable.exe",
   "Node-Cleaner-1.0.0-x64-Setup.exe",

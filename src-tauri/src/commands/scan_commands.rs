@@ -87,3 +87,37 @@ pub fn open_path_in_explorer(path: String) -> Result<(), AppError> {
 
     Ok(())
 }
+
+#[tauri::command]
+pub fn open_url(url: String) -> Result<(), AppError> {
+    if !url.starts_with("http://") && !url.starts_with("https://") && !url.starts_with("mailto:") {
+        return Err(AppError::Unknown("Geçersiz URL protokolü".to_string()));
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        Command::new("rundll32")
+            .args(["url.dll,FileProtocolHandler", &url])
+            .spawn()
+            .map_err(|e| AppError::Unknown(e.to_string()))?;
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        Command::new("open")
+            .arg(&url)
+            .spawn()
+            .map_err(|e| AppError::Unknown(e.to_string()))?;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        Command::new("xdg-open")
+            .arg(&url)
+            .spawn()
+            .map_err(|e| AppError::Unknown(e.to_string()))?;
+    }
+
+    Ok(())
+}
+
