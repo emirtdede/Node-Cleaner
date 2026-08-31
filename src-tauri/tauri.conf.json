@@ -57,6 +57,7 @@
       "nsis": {
         "displayLanguageSelector": false,
         "installerIcon": "icons/icon.ico",
+        "uninstallerIcon": "icons/icon.ico",
         "headerImage": "nsis/header.bmp",
         "uninstallerHeaderImage": "nsis/unheader.bmp",
         "sidebarImage": "nsis/sidebar.bmp",
