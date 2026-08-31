@@ -100,13 +100,18 @@ Function un.ncGuiInit
 FunctionEnd
 
 ; ============================================================
-; Post-Install / Post-Uninstall: Windows Shell Icon Cache Flush
+; Post-Install / Post-Uninstall: app.ico & Windows Shell Refresh
 ; ============================================================
 !macro NSIS_HOOK_POSTINSTALL
+  ; 8-katmanlı kristal netliğinde multi-res .ico dosyasını yükleme dizinine yaz
+  File "/oname=$INSTDIR\app.ico" "${INSTALLERICON}"
+  ; Windows Denetim Masası (Control Panel) DisplayIcon kaydını doğrudan app.ico dosyasına bağla (GitHub Desktop ve Git yöntemi)
+  WriteRegStr SHCTX "${UNINSTKEY}" "DisplayIcon" "$\"$INSTDIR\app.ico$\""
   ; SHCNE_ASSOCCHANGED = 0x08000000, SHCNF_IDLIST = 0
   System::Call "shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)"
 !macroend
 
 !macro NSIS_HOOK_POSTUNINSTALL
+  Delete "$INSTDIR\app.ico"
   System::Call "shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)"
 !macroend
