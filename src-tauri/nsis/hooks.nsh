@@ -98,3 +98,15 @@ Function un.ncGuiInit
   System::Free $R3
   System::Free $R6
 FunctionEnd
+
+; ============================================================
+; Post-Install / Post-Uninstall: Windows Shell Icon Cache Flush
+; ============================================================
+!macro NSIS_HOOK_POSTINSTALL
+  ; SHCNE_ASSOCCHANGED = 0x08000000, SHCNF_IDLIST = 0
+  System::Call "shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)"
+!macroend
+
+!macro NSIS_HOOK_POSTUNINSTALL
+  System::Call "shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)"
+!macroend

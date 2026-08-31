@@ -29,7 +29,20 @@ if (fs.existsSync(releaseOutputDir)) {
 } else {
   fs.mkdirSync(releaseOutputDir, { recursive: true });
 }
-console.log("✓ release_output temizlendi.");
+
+// Eski Cargo Resource Cache temizliği (yeni .ico dosyasının exe'ye gömülmesini garantilemek için)
+const tempTargetBuild = "C:\\Users\\emir\\AppData\\Local\\Temp\\node_cleaner_target\\release\\build";
+if (fs.existsSync(tempTargetBuild)) {
+  try {
+    const entries = fs.readdirSync(tempTargetBuild);
+    for (const e of entries) {
+      if (e.startsWith("node-cleaner-")) {
+        fs.rmSync(path.join(tempTargetBuild, e), { recursive: true, force: true });
+      }
+    }
+  } catch {}
+}
+console.log("✓ release_output ve derleme önbelleği temizlendi.");
 
 // 1. Sürüm Senkronizasyonunu Doğrula
 console.log("\n📦 1. Sürüm senkronizasyonu kontrol ediliyor...");
