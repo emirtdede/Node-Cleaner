@@ -131,90 +131,161 @@ const preMuiHeaderConfig = `; ==================================================
 
 nsiContent = nsiContent.replace("!include MUI2.nsh", `${preMuiHeaderConfig}\n!include MUI2.nsh`);
 
-// F. WinAPI ile Başlık (1037) ve Alt Başlık (1038) Sol Hizalama Fonksiyonlarını Ekle
+// F. Sayfa geçişlerine Header Hizalama Hook'larını ekle
+// 1. Directory page
+if (!nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\r\n!insertmacro MUI_PAGE_DIRECTORY") &&
+    !nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_DIRECTORY")) {
+  nsiContent = nsiContent.replace(
+    "!insertmacro MUI_PAGE_DIRECTORY",
+    "!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_DIRECTORY"
+  );
+}
+
+// 2. Instfiles page
+if (!nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\r\n!insertmacro MUI_PAGE_INSTFILES") &&
+    !nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_INSTFILES")) {
+  nsiContent = nsiContent.replace(
+    "!insertmacro MUI_PAGE_INSTFILES",
+    "!define MUI_PAGE_CUSTOMFUNCTION_SHOW AlignHeaderTexts\n!insertmacro MUI_PAGE_INSTFILES"
+  );
+}
+
+// 3. Uninstaller Confirm page (inside un.ConfirmShow)
+if (!nsiContent.includes("Call un.AlignHeaderTexts")) {
+  nsiContent = nsiContent.replace(
+    "Function un.ConfirmShow ; Add add a `Delete app data` check box",
+    "Function un.ConfirmShow ; Add add a `Delete app data` check box\n  Call un.AlignHeaderTexts"
+  );
+}
+
+// 4. Uninstaller Instfiles page
+if (!nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.AlignHeaderTexts\r\n!insertmacro MUI_UNPAGE_INSTFILES") &&
+    !nsiContent.includes("!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.AlignHeaderTexts\n!insertmacro MUI_UNPAGE_INSTFILES")) {
+  nsiContent = nsiContent.replace(
+    "!insertmacro MUI_UNPAGE_INSTFILES",
+    "!define MUI_PAGE_CUSTOMFUNCTION_SHOW un.AlignHeaderTexts\n!insertmacro MUI_UNPAGE_INSTFILES"
+  );
+}
+
+// 5. Reinstall page
+if (!nsiContent.includes("Call AlignHeaderTexts")) {
+  nsiContent = nsiContent.replace(
+    "Function PageReinstall",
+    "Function PageReinstall\n  Call AlignHeaderTexts"
+  );
+}
+
+// G. WinAPI ile Başlık (1037) ve Alt Başlık (1038) Sol Hizalama Fonksiyonlarını Ekle
 const alignFunctions = `
 ; =========================================================================
 ; WINAPI PIXEL-PERFECT HEADER TEXT ALIGNMENT (Title: 1037, Subtitle: 1038)
 ; Align Subtitle (1038) X position with Title (1037) X position
 ; =========================================================================
 Function AlignHeaderTexts
-  FindWindow $0 "#32770" "" $HWNDPARENT
-  \${If} $0 != 0
-    GetDlgItem $1 $0 1037
-    GetDlgItem $2 $0 1038
-    \${If} $1 != 0
-    \${AndIf} $2 != 0
-      System::Call *(i,i,i,i)p.r3
-      System::Call *(i,i,i,i)p.r4
-      System::Call *(i,i)p.r5
+  GetDlgItem $1 $HWNDPARENT 1037
+  GetDlgItem $2 $HWNDPARENT 1038
+  StrCpy $0 $HWNDPARENT
 
-      System::Call "user32::GetWindowRect(p r1, p r3)"
-      System::Call "user32::GetWindowRect(p r2, p r4)"
-
-      ; Title rect (left:$6, top:$7, right:$8, bottom:$9)
-      System::Call "*$3(i .r6, i .r7, i .r8, i .r9)"
-      ; Subtitle rect (left:$R0, top:$R1, right:$R2, bottom:$R3)
-      System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
-
-      ; Convert Title top-left to client coords relative to inner dialog $0
-      System::Call "*$5(i r6, i r7)"
-      System::Call "user32::ScreenToClient(p r0, p r5)"
-      System::Call "*$5(i .r6, i .r7)"
-
-      ; Convert Subtitle top-left to client coords
-      System::Call "*$5(i r10, i r11)"
-      System::Call "user32::ScreenToClient(p r0, p r5)"
-      System::Call "*$5(i .r10, i .r11)"
-
-      ; Calculate Subtitle width ($R4) and height ($R5)
-      IntOp $R4 $R2 - $R0
-      IntOp $R5 $R3 - $R1
-
-      ; Set Subtitle X position to Title X position ($6)
-      ; SWP_NOZORDER (0x0004) | SWP_NOACTIVATE (0x0010) = 0x0014
-      System::Call "user32::SetWindowPos(p r2, p 0, i r6, i r11, i r14, i r15, i 0x0014)"
-
-      System::Free $3
-      System::Free $4
-      System::Free $5
+  \${If} $1 == 0
+  \${OrIf} $2 == 0
+    FindWindow $0 "#32770" "" $HWNDPARENT
+    \${If} $0 != 0
+      GetDlgItem $1 $0 1037
+      GetDlgItem $2 $0 1038
     \${EndIf}
+  \${EndIf}
+
+  \${If} $1 != 0
+  \${AndIf} $2 != 0
+    System::Call *(i,i,i,i)p.r3
+    System::Call *(i,i,i,i)p.r4
+    System::Call *(i,i)p.r5
+
+    System::Call "user32::GetWindowRect(p r1, p r3)"
+    System::Call "user32::GetWindowRect(p r2, p r4)"
+
+    ; Title rect (left:$6, top:$7, right:$8, bottom:$9)
+    System::Call "*$3(i .r6, i .r7, i .r8, i .r9)"
+    ; Subtitle rect (left:$R0, top:$R1, right:$R2, bottom:$R3)
+    System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
+
+    ; Convert Title top-left to client coords relative to parent $0
+    System::Call "*$5(i r6, i r7)"
+    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "*$5(i .r6, i .r7)"
+
+    ; Convert Subtitle top-left to client coords relative to parent $0
+    System::Call "*$5(i r10, i r11)"
+    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "*$5(i .r10, i .r11)"
+
+    ; Calculate Subtitle width ($R4) and height ($R5)
+    IntOp $R4 $R2 - $R0
+    IntOp $R5 $R3 - $R1
+
+    ; Expand width by the shifted distance
+    IntOp $R6 $R0 - $6
+    \${If} $R6 > 0
+      IntOp $R4 $R4 + $R6
+    \${EndIf}
+
+    ; Set Subtitle X position to Title X position ($6)
+    ; SWP_NOZORDER (0x0004) | SWP_NOACTIVATE (0x0010) = 0x0014
+    System::Call "user32::SetWindowPos(p r2, p 0, i r6, i r11, i r14, i r15, i 0x0014)"
+
+    System::Free $3
+    System::Free $4
+    System::Free $5
   \${EndIf}
 FunctionEnd
 
 Function un.AlignHeaderTexts
-  FindWindow $0 "#32770" "" $HWNDPARENT
-  \${If} $0 != 0
-    GetDlgItem $1 $0 1037
-    GetDlgItem $2 $0 1038
-    \${If} $1 != 0
-    \${AndIf} $2 != 0
-      System::Call *(i,i,i,i)p.r3
-      System::Call *(i,i,i,i)p.r4
-      System::Call *(i,i)p.r5
+  GetDlgItem $1 $HWNDPARENT 1037
+  GetDlgItem $2 $HWNDPARENT 1038
+  StrCpy $0 $HWNDPARENT
 
-      System::Call "user32::GetWindowRect(p r1, p r3)"
-      System::Call "user32::GetWindowRect(p r2, p r4)"
-
-      System::Call "*$3(i .r6, i .r7, i .r8, i .r9)"
-      System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
-
-      System::Call "*$5(i r6, i r7)"
-      System::Call "user32::ScreenToClient(p r0, p r5)"
-      System::Call "*$5(i .r6, i .r7)"
-
-      System::Call "*$5(i r10, i r11)"
-      System::Call "user32::ScreenToClient(p r0, p r5)"
-      System::Call "*$5(i .r10, i .r11)"
-
-      IntOp $R4 $R2 - $R0
-      IntOp $R5 $R3 - $R1
-
-      System::Call "user32::SetWindowPos(p r2, p 0, i r6, i r11, i r14, i r15, i 0x0014)"
-
-      System::Free $3
-      System::Free $4
-      System::Free $5
+  \${If} $1 == 0
+  \${OrIf} $2 == 0
+    FindWindow $0 "#32770" "" $HWNDPARENT
+    \${If} $0 != 0
+      GetDlgItem $1 $0 1037
+      GetDlgItem $2 $0 1038
     \${EndIf}
+  \${EndIf}
+
+  \${If} $1 != 0
+  \${AndIf} $2 != 0
+    System::Call *(i,i,i,i)p.r3
+    System::Call *(i,i,i,i)p.r4
+    System::Call *(i,i)p.r5
+
+    System::Call "user32::GetWindowRect(p r1, p r3)"
+    System::Call "user32::GetWindowRect(p r2, p r4)"
+
+    System::Call "*$3(i .r6, i .r7, i .r8, i .r9)"
+    System::Call "*$4(i .r10, i .r11, i .r12, i .r13)"
+
+    System::Call "*$5(i r6, i r7)"
+    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "*$5(i .r6, i .r7)"
+
+    System::Call "*$5(i r10, i r11)"
+    System::Call "user32::ScreenToClient(p r0, p r5)"
+    System::Call "*$5(i .r10, i .r11)"
+
+    IntOp $R4 $R2 - $R0
+    IntOp $R5 $R3 - $R1
+
+    IntOp $R6 $R0 - $6
+    \${If} $R6 > 0
+      IntOp $R4 $R4 + $R6
+    \${EndIf}
+
+    System::Call "user32::SetWindowPos(p r2, p 0, i r6, i r11, i r14, i r15, i 0x0014)"
+
+    System::Free $3
+    System::Free $4
+    System::Free $5
   \${EndIf}
 FunctionEnd
 `;
