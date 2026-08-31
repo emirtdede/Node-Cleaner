@@ -40,38 +40,12 @@ try {
   process.exit(1);
 }
 
-// 2. 150x57 Saf Beyaz (#FFFFFF) Sağ Hizalı Header Bitmap Üret
-console.log("\n🎨 2. 150x57 px saf beyaz zeminli sağa yaslı NSIS header bitmap üretiliyor...");
-const genHeaderScript = path.join(rootDir, "scripts", "generate-nsis-header.ps1");
-try {
-  execSync(`powershell.exe -ExecutionPolicy Bypass -File "${genHeaderScript}"`, {
-    cwd: rootDir,
-    stdio: "inherit",
-  });
-} catch (err) {
-  console.error("❌ Header bitmap üretimi başarısız oldu:", err);
-  process.exit(1);
-}
-
-// 3. Tauri Release Derlemesi
-console.log("\n🔨 3. Tauri Release derlemesi başlatılıyor (Optimized x64)...");
+// 2. Tauri Release Derlemesi
+console.log("\n🔨 2. Tauri Release derlemesi başlatılıyor (Optimized x64)...");
 try {
   execSync("npm run tauri build", { cwd: rootDir, stdio: "inherit" });
 } catch (err) {
   console.error("❌ Tauri derleme işlemi başarısız oldu!");
-  process.exit(1);
-}
-
-// 4. NSIS installer.nsi Dosyasını Yamala ve makensis.exe ile Yeniden Derle
-console.log("\n🛠️  4. NSIS Modern UI 2 şablonu ve WinAPI hizalaması yamalanıyor...");
-const patchScript = path.join(rootDir, "scripts", "patch-nsis.js");
-try {
-  execSync(`node "${patchScript}"`, {
-    cwd: rootDir,
-    stdio: "inherit",
-  });
-} catch (err) {
-  console.error("❌ NSIS yamalama ve derleme işlemi başarısız oldu!");
   process.exit(1);
 }
 
